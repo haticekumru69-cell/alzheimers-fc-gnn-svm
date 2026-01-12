@@ -20,7 +20,7 @@ from torch_geometric.data import Data
 from torch_geometric.utils import dropout_edge
 
 # -------------------------------
-# 📚 NILEARN ENTEGRASYONU
+# NILEARN ENTEGRASYONU
 # -------------------------------
 try:
     from nilearn import datasets
@@ -28,10 +28,10 @@ try:
     NILEARN_AVAILABLE = True
 except ImportError:
     NILEARN_AVAILABLE = False
-    print("⚠️ UYARI: 'nilearn' yüklü değil. Bölge isimleri yazılamayacak. (pip install nilearn)")
+    print("UYARI: 'nilearn' yüklü değil. Bölge isimleri yazılamayacak. (pip install nilearn)")
 
 # -------------------------------
-# ⚙️ AYARLAR
+# AYARLAR
 # -------------------------------
 device = "cuda" if torch.cuda.is_available() else "cpu"
 K_TOP_EDGES = 8
@@ -42,7 +42,7 @@ EPOCHS = 150
 ROI_HEDEF = 60
 REPORT_TOP_N = 8
 
-print(f"⚙️ Strateji: Top {ROI_HEDEF} ROI | Sensitivity & Specificity Analizi Dahil")
+print(f"Strateji: Top {ROI_HEDEF} ROI | Sensitivity & Specificity Analizi Dahil")
 
 
 def fix_seed(seed):
@@ -55,7 +55,7 @@ def fix_seed(seed):
 
 
 # -------------------------------
-# 📝 TEZ İÇİN RAPORLAMA FONKSİYONU
+# MAKALE İÇİN RAPORLAMA FONKSİYONU
 # -------------------------------
 def print_thesis_report(selected_indices, importances):
     if not NILEARN_AVAILABLE:
@@ -63,14 +63,14 @@ def print_thesis_report(selected_indices, importances):
         return
 
     print("\n" + "=" * 95)
-    print(f"📄 TEZ İÇİN BULGULAR: EN AYIRT EDİCİ {REPORT_TOP_N} BÖLGE")
+    print(f"MAKALE İÇİN BULGULAR: EN AYIRT EDİCİ {REPORT_TOP_N} BÖLGE")
     print("=" * 95)
 
     try:
         atlas = datasets.fetch_atlas_schaefer_2018(n_rois=400, yeo_networks=7)
         labels = [l.decode() if isinstance(l, bytes) else l for l in atlas.labels]
     except Exception as e:
-        print(f"⚠️ Atlas yüklenemedi: {e}")
+        print(f"Atlas yüklenemedi: {e}")
         return
 
     print(f"{'Sıra':<5} | {'Skor':<8} | {'ROI ID':<8} | {'Yarımküre':<10} | {'AĞ (Network)':<15} | {'BÖLGE DETAYI'}")
@@ -115,7 +115,7 @@ def load_full_matrix(mat_path):
     if 'y_Tum' in mat:
         y = mat['y_Tum'].flatten()
     else:
-        print("⚠️ 'y_Tum' bulunamadı, otomatik oluşturuluyor...")
+        print("'y_Tum' bulunamadı, otomatik oluşturuluyor...")
         y = np.concatenate([np.zeros(X.shape[0] // 2), np.ones(X.shape[0] - X.shape[0] // 2)])
 
     return X, y
@@ -180,7 +180,7 @@ if __name__ == "__main__":
 
         # RF Seçimi
         X_flat = np.mean(np.abs(X_full), axis=2)
-        print(f"📉 En İyi {ROI_HEDEF} Bölge Seçiliyor (Random Forest)...")
+        print(f"En İyi {ROI_HEDEF} Bölge Seçiliyor (Random Forest)...")
         rf = RandomForestClassifier(n_estimators=100, random_state=42)
         rf.fit(X_flat, y_raw)
 
@@ -191,10 +191,10 @@ if __name__ == "__main__":
         print_thesis_report(top_indices, top_scores)
 
         X_selected = X_full[:, top_indices, :][:, :, top_indices]
-        print(f"   ✅ Veri Hazır: {X_selected.shape}")
+        print(f"  Veri Hazır: {X_selected.shape}")
 
         # B. Graf Dönüşümü
-        print(f"🕸️ Graf dönüşümü yapılıyor...")
+        print(f"Graf dönüşümü yapılıyor...")
         graph_dataset = [matrix_to_graph(X_selected[i], y_raw[i], k=K_TOP_EDGES) for i in range(len(X_selected))]
 
         # C. Eğitim
@@ -209,7 +209,7 @@ if __name__ == "__main__":
         global_preds = []
         global_labels = []
 
-        print("\n🚀 EĞİTİM BAŞLIYOR (Sensitivity & Specificity Takibi)")
+        print("\n EĞİTİM BAŞLIYOR (Sensitivity & Specificity Takibi)")
         print("=" * 75)
 
         for fold, (train_idx, val_idx) in enumerate(skf.split(np.zeros(len(labels)), labels)):
@@ -272,14 +272,14 @@ if __name__ == "__main__":
             global_preds.extend(best_preds)
             global_labels.extend(best_truths)
 
-            print(f"📂 Fold {fold + 1}: Acc: %{best_fold_acc * 100:.1f} | F1: {best_fold_f1:.3f} | "
+            print(f" Fold {fold + 1}: Acc: %{best_fold_acc * 100:.1f} | F1: {best_fold_f1:.3f} | "
                   f"Sens: {fold_sens:.3f} | Spec: {fold_spec:.3f}")
 
         # ----------------------------------------
-        # 🔥 FİNAL METRİKLER (GÜNCELLENEN KISIM)
+        # FİNAL METRİKLER 
         # ----------------------------------------
         print("\n" + "=" * 60)
-        print("🏆 FİNAL KLİNİK PERFORMANS DEĞERLERİ")
+        print(" FİNAL KLİNİK PERFORMANS DEĞERLERİ")
         print("=" * 60)
 
         # Global Confusion Matrix
@@ -292,10 +292,10 @@ if __name__ == "__main__":
         f1_final = f1_score(global_labels, global_preds, average='weighted')
         acc_final = accuracy_score(global_labels, global_preds)
 
-        print(f"✅ Ortalama Accuracy : %{acc_final * 100:.2f}")
-        print(f"✅ Ortalama F1-Score : {f1_final:.4f}")
-        print(f"🩺 SENSITIVITY (Duyarlılık - Hasta Bulma) : {sensitivity:.4f}")
-        print(f"🛡️ SPECIFICITY (Özgüllük - Sağlıklı Bulma): {specificity:.4f}")
+        print(f" Ortalama Accuracy : %{acc_final * 100:.2f}")
+        print(f" Ortalama F1-Score : {f1_final:.4f}")
+        print(f" SENSITIVITY (Duyarlılık - Hasta Bulma) : {sensitivity:.4f}")
+        print(f" SPECIFICITY (Özgüllük - Sağlıklı Bulma): {specificity:.4f}")
         print("-" * 60)
         print(f"Detaylar: TP: {tp} (Doğru Hasta) | TN: {tn} (Doğru Sağlıklı)")
         print(f"          FP: {fp} (Yanlış Hasta) | FN: {fn} (Kaçırılan Hasta)")
@@ -310,4 +310,4 @@ if __name__ == "__main__":
         plt.show()
 
     else:
-        print(f"❌ Dosya bulunamadı! '{mat_path}'")
+        print(f" Dosya bulunamadı! '{mat_path}'")
