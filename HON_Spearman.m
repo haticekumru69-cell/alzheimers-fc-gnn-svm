@@ -8,7 +8,7 @@ clear; clc; close all;
 % 1. AYARLAR
 %% =========================================================
 
-fprintf('🚀 SVM için HON-Spearman veri hazırlanıyor...\n');
+fprintf(' SVM için HON-Spearman veri hazırlanıyor...\n');
 
 AnaKlasor = '/Users/haticekumru/Desktop/Alzheimer_fnets';
 CiktiKlasoru = fullfile(pwd, 'ALZHEIMER_SVM_HON_SPEARMAN');
@@ -43,7 +43,7 @@ for g = 1:numel(Gruplar)
     GrupYolu = fullfile(AnaKlasor, Gruplar{g}.yol);
     Dosyalar = dir(fullfile(GrupYolu, '*.txt'));
 
-    fprintf('➡️  %s grubu (%d dosya)\n', Gruplar{g}.isim, numel(Dosyalar));
+    fprintf('  %s grubu (%d dosya)\n', Gruplar{g}.isim, numel(Dosyalar));
 
     for i = 1:numel(Dosyalar)
         try
@@ -101,4 +101,4 @@ SVM_Veri.ROI = ROI_Etiketleri;
 
 save(fullfile(CiktiKlasoru,'Alzheimer_HonSpearman_ML.mat'),'SVM_Veri');
 
-fprintf('✅ Classical ML (HON-Spearman) verisi kaydedildi\n');
+fprintf(' Classical ML (HON-Spearman) verisi kaydedildi\n');
