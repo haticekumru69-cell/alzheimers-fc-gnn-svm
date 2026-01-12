@@ -4,7 +4,7 @@
 ![Language](https://img.shields.io/badge/Language-MATLAB-orange)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-## 📌 Overview
+##Overview
 
 This repository contains a complete pipeline for classifying **Alzheimer’s Disease (AD)** vs. **Cognitively Normal (CN)** subjects using functional connectivity (FC) derived from fMRI data.
 
@@ -12,7 +12,7 @@ The project explores two major modeling approaches:
 1.  **Classical Machine Learning:** SVM and MLP using graph-theoretic features (Node Strength).
 2.  **Deep Learning:** Graph Neural Networks (GNN) and DeepSets using full connectivity matrices.
 
-## 🚀 Key Features
+##Key Features
 
 * **Data Preprocessing:** ROI signal extraction and reduction (410 $\to$ 400 regions).
 * **Connectivity Construction:**
@@ -26,7 +26,7 @@ The project explores two major modeling approaches:
     * Linear SVM with Leave-One-Out Cross-Validation (LOOCV).
     * Statistical Feature Selection (Welch's t-test).
 
-## 📂 Repository Structure
+##Repository Structure
 
 The project is organized into modular scripts for reproducibility:
 
