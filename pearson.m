@@ -27,7 +27,7 @@ X_Tum = [];          % (N x 400 x 400) → GNN
 X_MLP = [];          % (N x 400) → MLP
 y_Tum = [];
 
-fprintf('🚀 Veri işleme başlıyor...\n');
+fprintf(' Veri işleme başlıyor...\n');
 
 %% =========================================================
 % 3. ANA VERİ İŞLEME DÖNGÜSÜ
@@ -38,7 +38,7 @@ for g = 1:numel(Gruplar)
     GrupYolu = fullfile(AnaKlasor, Gruplar{g});
     Dosyalar = dir(fullfile(GrupYolu, '*.txt'));
     
-    fprintf('➡️  %s grubu (%d dosya)\n', Gruplar{g}, numel(Dosyalar));
+    fprintf('  %s grubu (%d dosya)\n', Gruplar{g}, numel(Dosyalar));
     
     for i = 1:numel(Dosyalar)
         try
@@ -100,13 +100,13 @@ SVM_Veri.ROI = ROI_Etiketleri;
 
 save(fullfile(CiktiKlasoru,'Alzheimer_Pearson_ML.mat'),'SVM_Veri');
 
-fprintf('✅ Classical ML (SVM) verisi kaydedildi\n');
+fprintf(' Classical ML (SVM) verisi kaydedildi\n');
 
 % --- GNN / DeepSet ---
 X_Tum = permute(X_Tum,[3 1 2]); % (N x 400 x 400)
 save(fullfile(CiktiKlasoru,'Alzheimer_400x400_Full_yenipearson.mat'), ...
      'X_Tum','y_Tum');
 
-fprintf('✅ GNN / DeepSet verisi kaydedildi\n');
-fprintf('📊 Toplam örnek: %d\n', size(X_Tum,1));
+fprintf(' GNN / DeepSet verisi kaydedildi\n');
+fprintf(' Toplam örnek: %d\n', size(X_Tum,1));
 
