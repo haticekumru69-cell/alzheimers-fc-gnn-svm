@@ -1,5 +1,5 @@
 %% =========================================================
-%  🎯 ADIM 3: SVM TABANLI ÖZELLİK SEÇİMİ ve DEĞERLENDİRME
+%  ADIM 3: SVM TABANLI ÖZELLİK SEÇİMİ ve DEĞERLENDİRME
 %% =========================================================
 
 clear; clc; close all;
@@ -8,13 +8,12 @@ clear; clc; close all;
 % 1. VERİ YÜKLEME
 %% =========================================================
 
-fprintf('--- 🚀 SVM Analizi Başlatılıyor ---\n');
 
 klasor_veri = fullfile(pwd, 'ALZHEIMER_SVM_HON_SPEARMAN');
 dosya_yolu  = fullfile(klasor_veri, 'Alzheimer_HonSpearman_ML.mat');
 
 if ~exist(dosya_yolu, 'file')
-    error('❌ Veri dosyası bulunamadı!');
+    error(' Veri dosyası bulunamadı!');
 end
 
 load(dosya_yolu);   % -> SVM_Veri gelir
@@ -23,7 +22,7 @@ X = SVM_Veri.X;   % (N x 400)
 y = SVM_Veri.y;   % (N x 1)
 
 
-fprintf('✔ Veri yüklendi: %d örnek, %d özellik\n', size(X,1), size(X,2));
+fprintf(' Veri yüklendi: %d örnek, %d özellik\n', size(X,1), size(X,2));
 
 %% =========================================================
 % 2. ÖZNİTELİK SEÇİMİ (Welch T-Test)
@@ -39,7 +38,7 @@ end
 [p_sirali, idx_sirali] = sort(p_degerleri);
 Anlamli_Indeksler = idx_sirali(p_sirali < 0.05);
 
-fprintf('🔍 Anlamlı özellik sayısı: %d\n', numel(Anlamli_Indeksler));
+fprintf(' Anlamlı özellik sayısı: %d\n', numel(Anlamli_Indeksler));
 
 %% =========================================================
 % 3. SVM DÖNGÜSÜ (Artan Özellik Sayısı)
@@ -98,5 +97,5 @@ SonucTablosu = table( ...
         'Yontem','Ozellik_Sayisi', ...
         'Accuracy','Sensitivity','Specificity','F1_Score'});
 
-fprintf('\n🏆 --- EN İYİ SONUÇ --- 🏆\n');
+fprintf('\n --- EN İYİ SONUÇ --- \n');
 disp(SonucTablosu);
