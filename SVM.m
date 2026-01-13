@@ -1,60 +1,58 @@
 %% =========================================================
-%  ADIM 3: SVM TABANLI ÖZELLİK SEÇİMİ ve DEĞERLENDİRME
+%  STEP 3: SVM-BASED FEATURE SELECTION and EVALUATION
 %% =========================================================
 
 clear; clc; close all;
 
 %% =========================================================
-% 1. VERİ YÜKLEME
+% 1. DATA LOADING
 %% =========================================================
 
+data_folder = fullfile(pwd, 'ALZHEIMER_SVM_HON_SPEARMAN');
+file_path   = fullfile(data_folder, 'Alzheimer_HonSpearman_ML.mat');
 
-klasor_veri = fullfile(pwd, 'ALZHEIMER_SVM_HON_SPEARMAN');
-dosya_yolu  = fullfile(klasor_veri, 'Alzheimer_HonSpearman_ML.mat');
-
-if ~exist(dosya_yolu, 'file')
-    error(' Veri dosyası bulunamadı!');
+if ~exist(file_path, 'file')
+    error(' Data file not found!');
 end
 
-load(dosya_yolu);   % -> SVM_Veri gelir
+load(file_path);   % -> loads SVM_Data
 
 X = SVM_Veri.X;   % (N x 400)
 y = SVM_Veri.y;   % (N x 1)
 
-
-fprintf(' Veri yüklendi: %d örnek, %d özellik\n', size(X,1), size(X,2));
+fprintf(' Data loaded: %d samples, %d features\n', size(X,1), size(X,2));
 
 %% =========================================================
-% 2. ÖZNİTELİK SEÇİMİ (Welch T-Test)
+% 2. FEATURE SELECTION (Welch T-Test)
 %% =========================================================
 
-p_degerleri = zeros(1, size(X,2));
+p_values = zeros(1, size(X,2));
 
 for i = 1:size(X,2)
     [~, p] = ttest2(X(y==0,i), X(y==1,i), 'Vartype','unequal');
-    p_degerleri(i) = p;
+    p_values(i) = p;
 end
 
-[p_sirali, idx_sirali] = sort(p_degerleri);
-Anlamli_Indeksler = idx_sirali(p_sirali < 0.05);
+[p_sorted, idx_sorted] = sort(p_values);
+Significant_Indices = idx_sorted(p_sorted < 0.05);
 
-fprintf(' Anlamlı özellik sayısı: %d\n', numel(Anlamli_Indeksler));
+fprintf(' Number of significant features: %d\n', numel(Significant_Indices));
 
 %% =========================================================
-% 3. SVM DÖNGÜSÜ (Artan Özellik Sayısı)
+% 3. SVM LOOP (Increasing Number of Features)
 %% =========================================================
 
-En_Iyi_Acc   = 0;
-En_Iyi_K     = 0;
-En_Iyi_Stats = [];
+Best_Acc   = 0;
+Best_K     = 0;
+Best_Stats = [];
 
-for k = 1:length(Anlamli_Indeksler)
+for k = 1:length(Significant_Indices)
 
-    secilen_idx = Anlamli_Indeksler(1:k);
-    X_alt = X(:, secilen_idx);
+    selected_idx = Significant_Indices(1:k);
+    X_sub = X(:, selected_idx);
 
     MDL = fitcsvm( ...
-        X_alt, y, ...
+        X_sub, y, ...
         'Standardize', true, ...
         'KernelFunction','linear', ...
         'KernelScale','auto', ...
@@ -75,27 +73,27 @@ for k = 1:length(Anlamli_Indeksler)
 
     if isnan(f1), f1 = 0; end
 
-    if acc > En_Iyi_Acc
-        En_Iyi_Acc   = acc;
-        En_Iyi_K     = k;
-        En_Iyi_Stats = [acc sens spec f1];
+    if acc > Best_Acc
+        Best_Acc   = acc;
+        Best_K     = k;
+        Best_Stats = [acc sens spec f1];
     end
 end
 
 %% =========================================================
-% 4. SONUÇLAR
+% 4. RESULTS
 %% =========================================================
 
-SonucTablosu = table( ...
+ResultTable = table( ...
     "Pearson", ...
-    En_Iyi_K, ...
-    En_Iyi_Stats(1)*100, ...
-    En_Iyi_Stats(2)*100, ...
-    En_Iyi_Stats(3)*100, ...
-    En_Iyi_Stats(4)*100, ...
+    Best_K, ...
+    Best_Stats(1)*100, ...
+    Best_Stats(2)*100, ...
+    Best_Stats(3)*100, ...
+    Best_Stats(4)*100, ...
     'VariableNames', { ...
-        'Yontem','Ozellik_Sayisi', ...
+        'Method','Number_of_Features', ...
         'Accuracy','Sensitivity','Specificity','F1_Score'});
 
-fprintf('\n --- EN İYİ SONUÇ --- \n');
-disp(SonucTablosu);
+fprintf('\n --- BEST RESULT --- \n');
+disp(ResultTable);
