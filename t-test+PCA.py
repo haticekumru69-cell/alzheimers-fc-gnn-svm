@@ -26,7 +26,7 @@ GROUPS = [
     {"name": "AD", "folder": "45_AD_yeni", "label": 1}
 ]
 
-ROI_INDEX = np.r_[0:200, 210:410]   # 410 → 400 ROI
+ROI_INDEX = np.r_[0:200, 210:410]   # 410 -> 400 ROI
 ROI_N = len(ROI_INDEX)
 UT_IDX = np.triu_indices(ROI_N, k=1)
 
@@ -100,7 +100,7 @@ for fold, (train_idx, test_idx) in enumerate(loo.split(X), 1):
     X_train, X_test = X[train_idx], X[test_idx]
     y_train, y_test = y[train_idx], y[test_idx]
 
-    # 1️⃣ Feature selection (t-test, TRAIN ONLY)
+    # Feature selection using t-test (training set only)
     t_vals, _ = ttest_ind(
         X_train[y_train == 0],
         X_train[y_train == 1],
@@ -114,17 +114,17 @@ for fold, (train_idx, test_idx) in enumerate(loo.split(X), 1):
     X_train = X_train[:, selected_idx]
     X_test  = X_test[:, selected_idx]
 
-    # 2️⃣ Standardization
+    # Standardization
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test  = scaler.transform(X_test)
 
-    # 3️⃣ PCA (TRAIN ONLY)
+    # PCA (training set only)
     pca = PCA(n_components=PCA_VAR)
     X_train = pca.fit_transform(X_train)
     X_test  = pca.transform(X_test)
 
-    # 4️⃣ Logistic Regression
+    # Logistic Regression classifier
     clf = LogisticRegression(
         C=C_LOG,
         penalty="l2",
